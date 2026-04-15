@@ -1,6 +1,7 @@
 const Category = require("../models/categorySchema");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
+const ApiError = require("../utils/apiError");
 
 // @desc Get all categories
 // @route GET /categories
@@ -16,10 +17,10 @@ exports.getAllCategories = asyncHandler(async (req, res) => {
 // @desc Get category by id
 // @route GET /categories/:id
 // @access Public
-exports.getCategoryById = asyncHandler(async (req, res) => {
+exports.getCategoryById = asyncHandler(async (req, res, next) => {
   const category = await Category.findById(req.params.id);
   if (!category) {
-    return res.status(404).json({ message: "Category not found" });
+    return next(new ApiError("Category not found", 404));
   }
   res.status(200).json(category);
 });
@@ -37,7 +38,7 @@ exports.createCategory = asyncHandler(async (req, res) => {
 // @desc Update category
 // @route PUT /categories/:id
 // @access Private
-exports.updateCategory = asyncHandler(async (req, res) => {
+exports.updateCategory = asyncHandler(async (req, res, next) => {
   const category = await Category.findByIdAndUpdate(
     req.params.id,
     { ...req.body, slug: slugify(req.body.name) },
@@ -46,17 +47,17 @@ exports.updateCategory = asyncHandler(async (req, res) => {
     },
   );
   if (!category) {
-    return res.status(404).json({ message: "Category not found" });
+    return next(new ApiError("Category not found", 404));
   }
   res.status(200).json(category);
 });
 // @desc Delete category
 // @route DELETE /categories/:id
 // @access Private
-exports.deleteCategory = asyncHandler(async (req, res) => {
+exports.deleteCategory = asyncHandler(async (req, res, next) => {
   const category = await Category.findByIdAndDelete(req.params.id);
   if (!category) {
-    return res.status(404).json({ message: "Category not found" });
+    return next(new ApiError("Category not found", 404));
   }
   res.status(200).json({ message: "Category deleted successfully" });
 });

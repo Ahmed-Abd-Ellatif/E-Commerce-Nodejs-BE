@@ -1,11 +1,12 @@
-// * REQUIREMENTS
+// REQUIREMENTS
 const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
 const dbConnection = require("./config/database");
+const ApiError = require("./utils/apiError");
+const globalError = require("./middlewares/errorMidleware");
 const categoryRoute = require("./Routes/categoryRoute");
-
-// * VARIABLES
+// VARIABLES
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -13,20 +14,36 @@ const port = process.env.PORT || 8080;
 dbConnection();
 
 //#region MIDDLEWARES
-// * MODE
+// MODE
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`Mode : ${process.env.NODE_ENV}`);
 }
-// * BODY PARSER
+// BODY PARSER
 app.use(express.json());
 
 //#endregion
 
-// * ROUTES
+//  ROUTES
 app.use("/categories", categoryRoute);
 
-// * LISTEN TO SERVER
-app.listen(port, () => {
+app.all("/{*path}", (req, res, next) => {
+  next(new ApiError(`Can't find ${req.originalUrl} on this server!`, 400));
+});
+
+//  GLOBAL ERROR HANDLER
+app.use(globalError);
+
+//  LISTEN TO SERVER
+const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+});
+
+// Handle Rejections outside express
+process.on("unhandledRejection", (err) => {
+  console.error(`Unhandled Rejection: ${err.name} | ${err.message}`);
+  server.close(() => {
+    console.error(`Shutting down server...`);
+    process.exit(1);
+  });
 });
