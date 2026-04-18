@@ -6,6 +6,8 @@ const dbConnection = require("./config/database");
 const ApiError = require("./utils/apiError");
 const globalError = require("./middlewares/errorMidleware");
 const categoryRoute = require("./Routes/categoryRoute");
+const subCategoryRoute = require("./Routes/subCategoryRoute");
+const brandRoute = require("./Routes/brandRoute");
 // VARIABLES
 const app = express();
 const port = process.env.PORT || 8080;
@@ -26,7 +28,8 @@ app.use(express.json());
 
 //  ROUTES
 app.use("/categories", categoryRoute);
-
+app.use("/subcategories", subCategoryRoute);
+app.use("/brands", brandRoute);
 app.all("/{*path}", (req, res, next) => {
   next(new ApiError(`Can't find ${req.originalUrl} on this server!`, 400));
 });
