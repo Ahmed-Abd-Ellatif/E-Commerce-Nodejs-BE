@@ -14,10 +14,10 @@ exports.createProductValidation = [
     .withMessage("Product title must be at least 2 characters long")
     .isLength({ max: 100 })
     .withMessage("Product title must be less than 100 characters long"),
-    check("description")
+  check("description")
     .notEmpty()
     .withMessage("Product description is required")
-    .isLength({ min: 2000 })
+    .isLength({ min: 20 })
     .withMessage("Product description must be at least 20 characters long"),
   check("quantity")
     .notEmpty()

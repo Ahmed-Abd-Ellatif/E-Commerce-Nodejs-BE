@@ -11,14 +11,14 @@ exports.getProducts = asyncHandler(async (req, res) => {
   const limit = req.query.limit * 1 || 10;
   const skip = (page - 1) * limit;
 
-  const products = await Product.find().skip(skip).limit(limit);
+  const products = await Product.find().populate({ path: "category", select: "name" }).skip(skip).limit(limit);
   res.status(200).json({ results: products.length, page, data: products });
 });
 // @desc Get product by id
 // @route GET /products/:id
 // @access Public
 exports.getProduct = asyncHandler(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate({ path: "category", select: "name" });
   if (!product) {
     return next(new ApiError(`Product not found with id ${req.params.id}`, 404));
   }
@@ -39,9 +39,10 @@ exports.createProduct = asyncHandler(async (req, res) => {
 // @route PUT /products/:id
 // @access Private
 exports.updateProduct = asyncHandler(async (req, res, next) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
+  const product = await Product.findByIdAndUpdate(req.params.id, 
+    { ...req.body, slug: slugify(req.body.title) }, 
+    { new: true }
+  );
     if (!product) {
     return next(new ApiError(`Product not found with id ${req.params.id}`, 404));
   }
