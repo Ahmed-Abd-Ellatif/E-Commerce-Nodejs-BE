@@ -1,6 +1,7 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Category = require("../../models/categorySchema");
+const Subcategory = require("../../models/subCategorySchema");
 
 exports.getProductValidation = [
   check("id").isMongoId().withMessage("Invalid product ID format"),
@@ -71,10 +72,20 @@ exports.createProductValidation = [
       }
       return true;
     }),
-  check("subcategory")
+  check("subcategories")
     .optional()
     .isArray()
-    .withMessage("Product subcategory must be an array of IDs") ,
+    .withMessage("Product subcategories must be an array of IDs")
+    .custom(async (subcategoriesIds) => {
+      if (!Array.isArray(subcategoriesIds) || subcategoriesIds.length === 0) {
+        return true;
+      }
+      const result = await Subcategory.find({ _id: { $in: subcategoriesIds } });
+      if (result.length !== subcategoriesIds.length) {
+        throw new Error("One or more subcategories not found");
+      }
+      return true;
+    }),
   check("brand")
     .optional()
     .isMongoId()
