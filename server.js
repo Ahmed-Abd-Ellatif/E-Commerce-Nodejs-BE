@@ -23,6 +23,7 @@ if (process.env.NODE_ENV === "development") {
   console.log(`Mode : ${process.env.NODE_ENV}`);
 }
 // BODY PARSER
+app.set("query parser", "extended"); // * To allow nested query objects like ?price[gt]=100
 app.use(express.json());
 
 //#endregion
@@ -52,4 +53,3 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
-// ******************

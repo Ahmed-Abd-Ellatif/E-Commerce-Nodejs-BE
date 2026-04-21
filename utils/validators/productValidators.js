@@ -77,29 +77,24 @@ exports.createProductValidation = [
     .isArray()
     .withMessage("Product subcategories must be an array of IDs")
     .custom(async (subcategoriesIds, { req }) => {
-  if (!Array.isArray(subcategoriesIds) || subcategoriesIds.length === 0) {
-    return true;
-  }
-  const uniqueSubIds = [...new Set(subcategoriesIds)];
-  const categoryId = req.body.category;
-  const foundSubcategories = await Subcategory.find({
-    _id: { $in: uniqueSubIds },
-    category: categoryId,
-  });
-  if (foundSubcategories.length !== uniqueSubIds.length) {
-    throw new Error(
-      "Invalid subcategories: one or more IDs not found or don't belong to the selected category"
-    );
-  }
+      if (!Array.isArray(subcategoriesIds) || subcategoriesIds.length === 0) {
+        return true;
+      }
+      const uniqueSubIds = [...new Set(subcategoriesIds)];
+      const categoryId = req.body.category;
+      const foundSubcategories = await Subcategory.find({
+        _id: { $in: uniqueSubIds },
+        category: categoryId,
+      });
+      if (foundSubcategories.length !== uniqueSubIds.length) {
+        throw new Error(
+          "Invalid subcategories: one or more IDs not found or don't belong to the selected category",
+        );
+      }
+      return true;
+    }),
 
-  return true;
-}),
-
-
-  check("brand")
-    .optional()
-    .isMongoId()
-    .withMessage("Invalid brand ID format"),
+  check("brand").optional().isMongoId().withMessage("Invalid brand ID format"),
 
   check("ratingsAverage")
     .optional()
@@ -111,12 +106,11 @@ exports.createProductValidation = [
     .withMessage("Product ratings average must be at least 1")
     .isLength({ max: 5 })
     .withMessage("Product ratings average must be less than 5"),
-    
+
   check("ratingsQuantity")
     .optional()
     .isNumeric()
     .withMessage("Product ratings quantity must be a number"),
-
 
   validatorMiddleware,
 ];
@@ -130,4 +124,3 @@ exports.deleteProductValidation = [
   check("id").isMongoId().withMessage("Invalid product ID format"),
   validatorMiddleware,
 ];
-
