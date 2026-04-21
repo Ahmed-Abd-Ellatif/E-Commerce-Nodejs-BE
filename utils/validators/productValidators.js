@@ -76,16 +76,26 @@ exports.createProductValidation = [
     .optional()
     .isArray()
     .withMessage("Product subcategories must be an array of IDs")
-    .custom(async (subcategoriesIds) => {
-      if (!Array.isArray(subcategoriesIds) || subcategoriesIds.length === 0) {
-        return true;
-      }
-      const result = await Subcategory.find({ _id: { $in: subcategoriesIds } });
-      if (result.length !== subcategoriesIds.length) {
-        throw new Error("One or more subcategories not found");
-      }
-      return true;
-    }),
+    .custom(async (subcategoriesIds, { req }) => {
+  if (!Array.isArray(subcategoriesIds) || subcategoriesIds.length === 0) {
+    return true;
+  }
+  const uniqueSubIds = [...new Set(subcategoriesIds)];
+  const categoryId = req.body.category;
+  const foundSubcategories = await Subcategory.find({
+    _id: { $in: uniqueSubIds },
+    category: categoryId,
+  });
+  if (foundSubcategories.length !== uniqueSubIds.length) {
+    throw new Error(
+      "Invalid subcategories: one or more IDs not found or don't belong to the selected category"
+    );
+  }
+
+  return true;
+}),
+
+
   check("brand")
     .optional()
     .isMongoId()
