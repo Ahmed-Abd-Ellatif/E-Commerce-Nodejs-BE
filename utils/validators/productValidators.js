@@ -110,4 +110,3 @@ exports.deleteProductValidation = [
   validatorMiddleware,
 ];
 
-// ################
