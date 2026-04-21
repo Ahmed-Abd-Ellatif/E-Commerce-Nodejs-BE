@@ -52,8 +52,6 @@ exports.getProducts = asyncHandler(async (req, res) => {
   // 6. Search
   if (req.query.keyword) {
     const keyword = req.query.keyword;
-    // remove start and end spaces
-    keyword.trim();
     mongooseQuery.find({
       $or: [
         { title: { $regex: keyword, $options: "i" } }, // i => case insensitive
