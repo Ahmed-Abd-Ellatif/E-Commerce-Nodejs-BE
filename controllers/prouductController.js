@@ -14,11 +14,18 @@ exports.getProducts = asyncHandler(async (req, res) => {
     .sort()
     .limitFields()
     .search()
-    .paginate();
+    .paginate(await Product.countDocuments());
 
   // 2. Execute query
-  const products = await apiFeatures.mongooseQuery;
-  res.status(200).json({ results: products.length, data: products });
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const products = await mongooseQuery;
+  res
+    .status(200)
+    .json({
+      results: products.length,
+      pagination: paginationResult,
+      data: products,
+    });
 });
 // @desc Get product by id
 // @route GET /products/:id
