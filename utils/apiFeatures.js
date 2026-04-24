@@ -38,19 +38,26 @@ class APIFeatures {
     return this;
   }
   //   * SEARCH
-  search() {
+  search(modelName) {
     if (this.queryString.keyword) {
       const keyword = this.queryString.keyword;
-      this.mongooseQuery.find({
-        $or: [
-          { title: { $regex: keyword, $options: "i" } }, // i => case insensitive
-          { description: { $regex: keyword, $options: "i" } },
-        ],
-      });
+      if (modelName === "Product") {
+        this.mongooseQuery = this.mongooseQuery.find({
+          $or: [
+            { title: { $regex: keyword, $options: "i" } }, // i => case insensitive
+            { description: { $regex: keyword, $options: "i" } },
+          ],
+        });
+      } else {
+        this.mongooseQuery = this.mongooseQuery.find({
+          $or: [
+            { name: { $regex: keyword, $options: "i" } }, // i => case insensitive
+          ],
+        });
+      }
     }
     return this;
   }
-
   //   * PAGINATION
   paginate(countDocuments) {
     const page = this.queryString.page * 1 || 1;

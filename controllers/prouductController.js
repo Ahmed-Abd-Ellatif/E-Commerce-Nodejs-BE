@@ -13,7 +13,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
     .filter()
     .sort()
     .limitFields()
-    .search()
+    .search("Product")
     .paginate(await Product.countDocuments());
 
   // 2. Execute query
