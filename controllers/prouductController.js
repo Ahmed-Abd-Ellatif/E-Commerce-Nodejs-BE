@@ -1,84 +1,26 @@
-const slugify = require("slugify");
-const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/apiError");
 const Product = require("../models/productSchema");
-const ApiFeatures = require("../utils/apiFeatures");
-
+const factory = require("./handlerFactory");
 // @desc Get all products
 // @route GET /products
 // @access Public
-exports.getProducts = asyncHandler(async (req, res) => {
-  // 1. Build query
-  const apiFeatures = new ApiFeatures(Product.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .search("Product")
-    .paginate(await Product.countDocuments());
+exports.getProducts = factory.getAll(Product, "Product");
 
-  // 2. Execute query
-  const { mongooseQuery, paginationResult } = apiFeatures;
-  const products = await mongooseQuery;
-  res
-    .status(200)
-    .json({
-      results: products.length,
-      pagination: paginationResult,
-      data: products,
-    });
-});
 // @desc Get product by id
 // @route GET /products/:id
 // @access Public
-exports.getProduct = asyncHandler(async (req, res, next) => {
-  const product = await Product.findById(req.params.id).populate({
-    path: "category",
-    select: "name",
-  });
-  if (!product) {
-    return next(
-      new ApiError(`Product not found with id ${req.params.id}`, 404),
-    );
-  }
-  res.status(200).json({ data: product });
-});
+exports.getProduct = factory.getOne(Product);
+
 // @desc Create new product
 // @route POST /products
 // @access Private
-exports.createProduct = asyncHandler(async (req, res) => {
-  const newProduct = new Product({
-    ...req.body,
-    slug: slugify(req.body.title),
-  });
-  const savedProduct = await newProduct.save();
-  res.status(201).json(savedProduct);
-});
+exports.createProduct = factory.createOne(Product);
+
 // @desc Update product
 // @route PUT /products/:id
 // @access Private
-exports.updateProduct = asyncHandler(async (req, res, next) => {
-  if (req.body.title) {
-    req.body.slug = slugify(req.body.title);
-  }
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  if (!product) {
-    return next(
-      new ApiError(`Product not found with id ${req.params.id}`, 404),
-    );
-  }
-  res.status(200).json({ data: product });
-});
+exports.updateProduct = factory.updateOne(Product);
+
 // @desc Delete product
 // @route DELETE /products/:id
 // @access Private
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
-  const product = await Product.findByIdAndDelete(req.params.id);
-  if (!product) {
-    return next(
-      new ApiError(`Product not found with id ${req.params.id}`, 404),
-    );
-  }
-  res.status(204).json({ data: null });
-});
+exports.deleteProduct = factory.deleteOne(Product);
