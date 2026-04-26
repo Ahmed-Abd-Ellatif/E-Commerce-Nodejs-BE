@@ -69,4 +69,9 @@ const schema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// * Mongoose Middleware query
+schema.pre(/^find/, async function () {
+  this.populate({ path: "category", select: "name" });
+});
+
 module.exports = mongoose.model("Product", schema);
