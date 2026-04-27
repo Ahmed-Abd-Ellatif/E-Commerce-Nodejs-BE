@@ -1,14 +1,19 @@
 const express = require("express");
 const Controller = require("../controllers/categoryController");
 const Validators = require("../utils/validators/categoryValidators");
-const subcategoriesRouter = require("./subcategoryRoute");           
-const router = express.Router();
+const subcategoriesRouter = require("./subcategoryRoute");
 
+const router = express.Router();
 
 router
   .route("/")
   .get(Controller.getAllCategories)
-  .post(Controller.uploadCategoryImage, Validators.createCategoryValidation, Controller.createCategory);
+  .post(
+    Controller.uploadCategoryImage,
+    Controller.resizeImage,
+    Validators.createCategoryValidation,
+    Controller.createCategory,
+  );
 
 router
   .route("/:id")
