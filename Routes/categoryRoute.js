@@ -18,7 +18,12 @@ router
 router
   .route("/:id")
   .get(Validators.getCategoryValidation, Controller.getCategoryById)
-  .put(Validators.updateCategoryValidation, Controller.updateCategory)
+  .put(
+    Controller.uploadCategoryImage,
+    Controller.resizeImage,
+    Validators.updateCategoryValidation,
+    Controller.updateCategory,
+  )
   .delete(Validators.deleteCategoryValidation, Controller.deleteCategory);
 
 router.use("/:categoryId/subcategories", subcategoriesRouter);

@@ -1,7 +1,10 @@
 // REQUIREMENTS
+const path = require("path");
+
 const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
+
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/apiError");
 const globalError = require("./middlewares/errorMidleware");
@@ -25,7 +28,7 @@ if (process.env.NODE_ENV === "development") {
 // BODY PARSER
 app.set("query parser", "extended"); // * To allow nested query objects like ?price[gt]=100
 app.use(express.json());
-
+app.use(express.static(path.join(__dirname, "uploads")));
 //#endregion
 
 //  ROUTES

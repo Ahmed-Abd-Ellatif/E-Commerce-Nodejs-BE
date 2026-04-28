@@ -20,5 +20,13 @@ const schema = new mongoose.Schema(
   },
   { timestamps: true }, // * Add createdAt and updatedAt fields
 );
+schema.post("init", (doc) => {
+  console.log(process.env);
+  console.log(process.env.BASE_URL);
+
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
+  }
+});
 // * Create Model & Export
 module.exports = mongoose.model("Category", schema);
