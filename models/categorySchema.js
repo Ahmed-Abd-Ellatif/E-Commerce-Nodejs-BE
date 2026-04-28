@@ -20,10 +20,14 @@ const schema = new mongoose.Schema(
   },
   { timestamps: true }, // * Add createdAt and updatedAt fields
 );
+// FindOne , FindAll , Update
 schema.post("init", (doc) => {
-  console.log(process.env);
-  console.log(process.env.BASE_URL);
-
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
+  }
+});
+// Create
+schema.post("save", (doc) => {
   if (doc.image) {
     doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
   }

@@ -19,5 +19,18 @@ const schema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// FindOne , FindAll , Update
+schema.post("init", (doc) => {
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/brands/${doc.image}`;
+  }
+});
+// Create
+schema.post("save", (doc) => {
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/brands/${doc.image}`;
+  }
+});
 // * Create Model & Export
 module.exports = mongoose.model("Brand", schema);
