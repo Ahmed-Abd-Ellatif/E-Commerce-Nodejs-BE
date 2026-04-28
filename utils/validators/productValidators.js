@@ -56,11 +56,7 @@ exports.createProductValidation = [
     .isArray()
     .withMessage("Product colors must be an array"),
 
-  check("imageCover")
-    .notEmpty()
-    .withMessage("Product cover image is required")
-    .isURL()
-    .withMessage("Product cover image must be a valid URL"),
+  check("imageCover").notEmpty().withMessage("Product cover image is required"),
   check("images")
     .optional()
     .isArray()
@@ -122,10 +118,12 @@ exports.createProductValidation = [
 
 exports.updateProductValidation = [
   check("id").isMongoId().withMessage("Invalid product ID format"),
-  body("title").custom((value, { req }) => {
-    req.body.slug = slugify(value);
-    return true;
-  }),
+  body("title")
+    .optional()
+    .custom((value, { req }) => {
+      req.body.slug = slugify(value);
+      return true;
+    }),
   validatorMiddleware,
 ];
 
