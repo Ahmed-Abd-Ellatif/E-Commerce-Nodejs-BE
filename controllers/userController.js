@@ -69,6 +69,7 @@ exports.changeUserPassword = asyncHandler(async (req, res) => {
     req.params.id,
     {
       password: await bcrypt.hash(req.body.password, 10),
+      passwordChangedAt: Date.now(),
     },
     {
       new: true,
