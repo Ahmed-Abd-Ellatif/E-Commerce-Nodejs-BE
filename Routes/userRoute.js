@@ -2,11 +2,17 @@ const express = require("express");
 const router = express.Router();
 const Controller = require("../controllers/userController");
 const Validators = require("../utils/validators/userValidators");
+const AuthController = require("../controllers/authController");
 
 router
   .route("/")
-  .get(Controller.getUsers)
+  .get(AuthController.protect,
+     AuthController.allowedTo("admin"),
+      Controller.getUsers
+    )
   .post(
+    AuthController.protect,
+    AuthController.allowedTo("admin"),
     Controller.uploadUserImage,
     Controller.resizeImage,
     Validators.createUserValidation,
@@ -15,17 +21,29 @@ router
 
 router
   .route("/:id")
-  .get(Validators.getUserValidation, Controller.getUser)
+  .get( AuthController.protect,
+     AuthController.allowedTo("admin"),
+      Validators.getUserValidation,
+       Controller.getUser
+      )
   .put(
+    AuthController.protect,
+    AuthController.allowedTo("admin"),
     Controller.uploadUserImage,
     Controller.resizeImage,
     Validators.updateUserValidation,
     Controller.updateUser,
   )
-  .delete(Validators.deleteUserValidation, Controller.deleteUser);
+  .delete(
+    AuthController.protect,
+    AuthController.allowedTo("admin"),
+    Validators.deleteUserValidation,
+    Controller.deleteUser
+  );
 
-router.put(
-  "/change-password/:id",
+router.put("/change-password/:id",
+  AuthController.protect,
+  AuthController.allowedTo("admin"),
   Validators.changeUserPasswordValidation,
   Controller.changeUserPassword,
 );
