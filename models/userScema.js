@@ -33,6 +33,9 @@ const schema = new mongoose.Schema(
       minlength: [6, "password must be at least 6 characters"],
     },
     passwordChangedAt: Date,
+    passwordResetCode: String,
+    passwordResetExpires: Date,
+    passwordResetVerified: Boolean,
     role: {
       type: String,
       enum: ["admin","manager", "user"],
